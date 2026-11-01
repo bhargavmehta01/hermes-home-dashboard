@@ -1,5 +1,5 @@
 // Kept free of imports so it can be unit-tested without the SDK/React graph.
-type HomeDataSource = "status" | "system" | "analytics" | "cron" | "sessions" | "logs";
+type HomeDataSource = "status" | "system" | "analytics" | "cron" | "sessions" | "logs" | "panels";
 
 /** What a data-backed widget should render:
  *  - ok          fresh data (or the widget has no data source)

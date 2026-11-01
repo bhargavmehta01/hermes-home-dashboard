@@ -1,5 +1,6 @@
 import { WIDGET_REGISTRY } from "./widgets/registry";
 import type { HomeLayout } from "./layout-schema";
+import { catalogIds } from "./widgets/panelLogic";
 
 interface Props {
   layout: HomeLayout;
@@ -13,7 +14,8 @@ interface Props {
  *  animation is driven by `.home-catalog-wrap` in HomePage. */
 export function WidgetCatalog({ layout, onChipPointerDown }: Props) {
   const placed = new Set(layout.widgets.map((w) => w.id));
-  const available = Object.entries(WIDGET_REGISTRY).filter(([id]) => !placed.has(id));
+  const available = catalogIds(Object.keys(WIDGET_REGISTRY), placed)
+    .map((id) => [id, WIDGET_REGISTRY[id]] as const);
   return (
     <div className="home-catalog">
       <div className="home-catalog-inner">

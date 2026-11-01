@@ -1,0 +1,15 @@
+{
+  "id": "bgroute",
+  "title": "bgroute tiers",
+  "kind": "list",
+  "subtitle": "background route for low-stakes cron jobs",
+  "items": [
+    { "label": "InferX free", "value": "off" },
+    { "label": "OpenRouter DeepInfra flex", "value": "on" },
+    { "label": "DeepInfra pin (floor)", "value": "on" },
+    { "label": "last canary", "value": "pass" }
+  ],
+  "updated_at": "2026-11-01T14:07:00-05:00",
+  "source": "bgroute.py status",
+  "stale_after_minutes": 120
+}

@@ -38,3 +38,14 @@ test("Desktop host routes widget data, layout persistence, and navigation throug
   ]);
   assert.deepEqual(calls.at(-1), ["navigate", "/command-center?section=system"]);
 });
+
+test("Desktop host serves the Panels source through plugin-scoped REST", async () => {
+  const calls = [];
+  const ctx = { rest: async (path, options = {}) => { calls.push([path, options]); return { version: 1, panels: [], skipped: 0 }; } };
+  const desktop = { status: async () => ({}), logs: async () => ({}), navigate: () => undefined };
+  const adapter = createDesktopHomeHost(ctx, desktop);
+
+  assert.deepEqual(await adapter.fetchJSON("/api/plugins/home-dashboard/panels"), { version: 1, panels: [], skipped: 0 });
+  assert.deepEqual(calls, [["/panels", {}]]);
+  await assert.rejects(() => adapter.fetchJSON("/api/plugins/other/panels"));
+});

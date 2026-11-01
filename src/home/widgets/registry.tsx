@@ -17,6 +17,8 @@ import { PomodoroWidget } from "./PomodoroWidget";
 import { CountdownWidget } from "./CountdownWidget";
 import { CalendarWidget } from "./CalendarWidget";
 import { AgentWidget } from "./AgentWidget";
+import { PanelsWidget } from "./PanelsWidget";
+import { PANEL_SLOTS } from "./panelLogic";
 
 export interface WidgetRenderProps {
   data: HomeData;
@@ -42,6 +44,22 @@ export interface WidgetDef {
   navigateTo: string | null;
   /** HomeData source whose failure puts the widget in error state. */
   dataSource: HomeDataSource | null;
+}
+
+
+function panelSlot(i: number): WidgetDef {
+  return {
+    title: i === 0 ? "panels" : `panels ${i + 1}`,
+    component: ({ data, widgetProps, onWidgetPropsChange }) => (
+      <PanelsWidget
+        panels={data.panels}
+        widgetProps={widgetProps}
+        onWidgetPropsChange={onWidgetPropsChange}
+      />
+    ),
+    defaultSize: { gw: 3, gh: 3 }, minSize: { gw: 2, gh: 2 },
+    navigateTo: null, dataSource: "panels",
+  };
 }
 
 /** Single registration point for home widgets. A future user-widget SDK
@@ -193,4 +211,5 @@ export const WIDGET_REGISTRY: Record<string, WidgetDef> = {
     defaultSize: { gw: 4, gh: 3 }, minSize: { gw: 3, gh: 2 },
     navigateTo: null, dataSource: null,
   },
+  ...Object.fromEntries(PANEL_SLOTS.map((id, i) => [id, panelSlot(i)])),
 };

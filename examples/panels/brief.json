@@ -1,0 +1,9 @@
+{
+  "id": "brief",
+  "title": "Note from the agent",
+  "kind": "text",
+  "text": "Nightly backup OK.\nB2 offsite copy OK.\n2 PRs waiting on review.",
+  "updated_at": "2026-11-01T06:00:00-05:00",
+  "source": "chief",
+  "stale_after_minutes": 1440
+}

@@ -20,6 +20,23 @@ clone, they never build).
 
 ---
 
+## 1.6.0 — 2026-11-01
+
+- **Panels widget.** Agents and cron jobs publish small JSON panels by
+  atomically writing `$HERMES_HOME/panels/<id>.json` (profiles:
+  `~/.hermes/profiles/<name>/panels/`). Kinds: `stat`, `list`, `table`, `text`.
+  One widget shows one chosen panel (hover picker, saved in the layout) or
+  rotates through all; it shows "updated X ago", dims once
+  `stale_after_minutes` passes, and opens links in a new tab. Up to four Panels
+  widgets can sit on the grid (`panels`, `panels-2` … `panels-4`); the catalog
+  offers one free slot at a time.
+- **Backend:** new read-only `GET /api/plugins/home-dashboard/panels`. Fixed
+  directories, `*.json` only, regular files only (symlinks ignored), 64 KB cap
+  per file, strict schema-v1 validation and normalization, bad files skipped
+  and counted. Nothing in a panel is executed or used as a path. Desktop reads
+  it through the same plugin-scoped `ctx.rest` door as the layout.
+- Examples in `examples/panels/`; Python tests via `npm run test:py`.
+
 ## 1.5.0 — 2026-09-27
 
 Polish pass, verified in a live Hermes Desktop.

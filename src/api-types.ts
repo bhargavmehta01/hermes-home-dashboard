@@ -159,3 +159,41 @@ export interface CronJob {
   next_run_at?: string | null;
   last_error?: string | null;
 }
+// ── Panels (served by this plugin's dashboard/plugin_api.py, not the host) ──
+
+export type PanelKind = "stat" | "list" | "table" | "text";
+export type PanelScalar = string | number;
+
+export interface PanelItem {
+  label: string;
+  value?: PanelScalar;
+  url?: string;
+}
+
+/** Schema v1, already validated and normalized by the backend. */
+export interface PanelDoc {
+  id: string;
+  /** Unique across profiles: "<id>" (root) or "<profile>/<id>". */
+  key: string;
+  profile: string | null;
+  title: string;
+  kind: PanelKind;
+  updated_at: string;
+  value?: PanelScalar;
+  unit?: string;
+  delta?: PanelScalar;
+  subtitle?: string;
+  items?: PanelItem[];
+  columns?: string[];
+  rows?: (PanelScalar | null)[][];
+  text?: string;
+  link?: string;
+  source?: string;
+  stale_after_minutes?: number;
+}
+
+export interface PanelsResponse {
+  version: number;
+  panels: PanelDoc[];
+  skipped: number;
+}

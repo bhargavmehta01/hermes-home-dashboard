@@ -1,7 +1,7 @@
 {
   "name": "hermes-home-plugin",
   "private": true,
-  "version": "1.5.0",
+  "version": "1.6.0",
   "type": "module",
   "scripts": {
     "build": "npm run build:dashboard && npm run build:desktop",
@@ -9,6 +9,7 @@
     "build:desktop": "vite build --config vite.desktop.config.ts",
     "install:desktop": "node scripts/install-desktop.mjs",
     "test": "node --experimental-strip-types --test",
+    "test:py": "python3 -m unittest test.test_plugin_api_desktop test.test_plugin_api_panels",
     "typecheck": "tsc -p . --noEmit"
   },
   "devDependencies": {

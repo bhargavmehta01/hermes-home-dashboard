@@ -143,6 +143,51 @@ they never fight drag/resize.
 State that should stick (ranges, formats, timer lengths…) is saved to the layout;
 transient state (current page, browsed month) resets on reload.
 
+## Panels (agent-published widgets)
+
+Agents, skills and cron jobs can put their own small status cards on Home
+without touching the plugin: write one JSON file per panel to
+`$HERMES_HOME/panels/<id>.json` (default `~/.hermes/panels/`; a profile's jobs
+may write to `~/.hermes/profiles/<name>/panels/`, shown with the profile tag).
+Then add a **panels** widget from the edit catalog, hover it, and pick a panel
+(or leave it on *all · rotate*). Up to four Panels widgets can be placed.
+
+Write atomically (temp file in the same directory, then rename) so the widget
+never reads half a file:
+
+```bash
+mkdir -p ~/.hermes/panels
+tmp=$(mktemp ~/.hermes/panels/.daily-cost.XXXX)
+cat > "$tmp" <<JSON
+{"id":"daily-cost","title":"API spend · month","kind":"stat","value":18.42,
+ "unit":"USD","delta":"+1.37 today","updated_at":"$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+ "source":"costs.py","stale_after_minutes":1560}
+JSON
+mv "$tmp" ~/.hermes/panels/daily-cost.json
+```
+
+Schema v1 (unknown keys are ignored; invalid files are skipped, never fatal):
+
+| key | type | notes |
+|---|---|---|
+| `id` | string | required, `[a-z0-9][a-z0-9._-]{0,63}`, must equal the file name |
+| `title` | string | required, ≤ 80 chars |
+| `kind` | `stat` \| `list` \| `table` \| `text` | required |
+| `updated_at` | ISO 8601 | required; drives "updated X ago" |
+| `value` | number \| string | required for `stat` |
+| `unit`, `delta`, `subtitle` | string (delta may be a number) | a leading `+`/`-` colours the delta |
+| `items` | `[{label, value?, url?}]` | required for `list`, ≤ 50 |
+| `columns`, `rows` | `string[]`, `(string\|number\|null)[][]` | required for `table`, ≤ 8 × 50 |
+| `text` | string | required for `text`, ≤ 4000 chars, newlines kept |
+| `link` | http(s) URL | makes the title a link (opens in a new tab) |
+| `source` | string | shown in the footer |
+| `stale_after_minutes` | number | after this the panel dims and says *stale* |
+
+Limits: 64 KB per file, 200 files per directory, 100 panels returned. Only
+`http(s)` links are kept. Examples: [`examples/panels/`](examples/panels).
+Keep panels to status you would be fine seeing on screen: no secrets, keys,
+account numbers or personal/medical data.
+
 ## How it works
 
 - Ships two self-contained React + Vite bundles: a **dashboard plugin**
@@ -153,8 +198,9 @@ transient state (current page, browsed month) resets on reload.
   demand for their own controls — the Tokens range selector and the Logs file
   selector.
 - The Python side (`dashboard/plugin_api.py`) persists the widget layout to
-  `~/.hermes/plugins/home-dashboard/layout.json` and exposes plugin-scoped,
-  read-only adapters for Desktop's widgets.
+  `~/.hermes/plugins/home-dashboard/layout.json`, exposes plugin-scoped,
+  read-only adapters for Desktop's widgets, and serves the read-only
+  `/panels` list (web and Desktop read it through the same polling loop).
 - Hover controls are pure CSS reveal (`:hover`), suppressed in edit mode — no
   per-widget hover state, which keeps the canvas widgets flicker-free.
 
@@ -171,6 +217,7 @@ hermes-home-dashboard/
 │       └── style.css
 ├── desktop/
 │   └── plugin.js            # prebuilt native Desktop runtime plugin
+├── examples/panels/         # sample agent-published panels (schema v1)
 ├── src/                     # widget source (only needed to modify the plugin)
 ├── vite.config.ts           # builds src/ → dashboard/dist/
 ├── vite.desktop.config.ts   # builds src/ → desktop/plugin.js
@@ -187,7 +234,8 @@ git clone https://github.com/albertocvrrbs/hermes-home-dashboard.git
 cd hermes-home-dashboard
 npm install
 npm run typecheck     # tsc --noEmit
-npm test              # Desktop registration + host adapter contracts
+npm test              # Desktop registration + host adapter contracts + panels logic
+npm run test:py       # plugin_api.py: Desktop adapters + panels reader
 npm run build         # Web bundle + Desktop plugin.js
 ```
 

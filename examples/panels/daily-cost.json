@@ -1,0 +1,12 @@
+{
+  "id": "daily-cost",
+  "title": "API spend · month",
+  "kind": "stat",
+  "value": 18.42,
+  "unit": "USD",
+  "delta": "+1.37 today",
+  "subtitle": "all provider keys, UTC month",
+  "updated_at": "2026-11-01T08:15:00-05:00",
+  "source": "costs.py",
+  "stale_after_minutes": 1560
+}

@@ -1,0 +1,14 @@
+{
+  "id": "price-watch",
+  "title": "Price watch",
+  "kind": "table",
+  "columns": ["item", "now", "target", "90d low"],
+  "rows": [
+    ["Example headphones", 248, 220, 229],
+    ["Example stroller", 389, 350, 379]
+  ],
+  "link": "https://example.com/watchlist",
+  "updated_at": "2026-11-01T07:30:00-05:00",
+  "source": "price-gate",
+  "stale_after_minutes": 1560
+}
